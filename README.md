@@ -31,7 +31,20 @@ IMPORTANT: Satisfy certain constraints to use plug and produce macro tools.
 
 		3. TRIAL
 		--------
-		For simple demonstration, use already made design in the package.  
+		For simple demonstration, use already made design inside this package.  
 
 		
 		Thank you for reading me!  
+		
+## Authors
+
+* **Solomon Gugsa** - *Initial work* -
+
+
+
+## License
+
+This project is licensed under -----
+
+## Acknowledgments
+Special thanks to Anders Nillson, Fredrik Danielsson 
