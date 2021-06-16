@@ -41,7 +41,9 @@ IMPORTANT: Satisfy certain constraints to use plug and produce macro tools.
 
 * **Solomon Gugsa** - *Initial work* -
 
-
+## Version History
+* 0.1
+    * Initial Release
 
 ## License
 
@@ -49,3 +51,7 @@ This project is licensed under -----
 
 ## Acknowledgments
 Special thanks to Anders Nillson, Fredrik Danielsson 
+
+## Open Source License Acknowledgement
+* Macro FCInfoToMouse
+	* Mouse location functionality used under GNU General Public License
