@@ -39,7 +39,7 @@ IMPORTANT: Satisfy certain constraints to use plug and produce macro tools.
 		
 ## Authors
 
-* **Solomon Gugsa** - *Initial work* -
+* **Solomon Gugsa** 
 
 ## Version History
 * 0.1
