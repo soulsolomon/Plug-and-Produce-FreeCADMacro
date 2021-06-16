@@ -1,0 +1,161 @@
+from PySide.QtGui import *
+from PySide.QtCore import *
+import FreeCAD as App
+import FreeCADGui
+
+arr = []
+j    = 0
+class ViewObserver:
+	def __init__(self, view):
+		self.view = view
+   
+	def logPosition(self, info):
+		down = (info["State"] == "DOWN")
+		pos = info["Position"]
+
+		global arr
+		global j
+		
+		f = open("C:/Users/bini/Desktop/JSON/mouse.txt",mode='w',encoding='utf-8')
+		if (down):
+			
+			#FreeCAD.Console.PrintMessage("Clicked on position: ("+str(pos[0])+", "+str(pos[1])+")\n")
+			pnt = self.view.getPoint(pos)
+		
+			#FreeCAD.Console.PrintMessage("World coordinates: " + str(pnt) + "\n")
+			info = self.view.getObjectInfo(pos)
+			#FreeCAD.Console.PrintMessage(" Object info: " + str(info) + "\n")
+			result = list(info.items())
+			
+	
+			for i in range(0,3):
+				b = result[i]
+				f.write(str(b[1]) + '\n')
+				arr.append(b[1])
+			j = j+1
+			if (j == 2):
+				arr = []
+				j = 0
+			
+			FreeCAD.Console.PrintMessage("counter of mouseclick = " + str(j) + "\n")
+			FreeCAD.Console.PrintMessage("Append Array Distance" + str(arr) + "\n")
+			f.close()
+			
+       
+class GetInform:
+
+	def __init__(self):
+    		pass
+	def coordinates(self):
+    		#FreeCAD.Console.PrintMessage("I m inside mouseclick method")
+		return arr
+
+class CalibrationOperation(QWidget):
+	def __init__(self):
+		
+		super(CalibrationOperation, self).__init__()  
+		self.setWindowFlags(Qt.WindowStaysOnTopHint)
+		self.setWindowTitle("Calibration")
+		
+		self.btnDoWork = QPushButton("Calibrate")
+		self.btnDoWork.clicked.connect(self.calibrate)
+
+		self.btnDoWork2 = QPushButton("GetPos")
+		self.btnDoWork2.clicked.connect(self.getPose)
+
+		self.lableX = QLabel("Position at X")
+		self.lableY = QLabel("Position at Y")
+		self.lableZ = QLabel("Position at Z")
+		
+		self.box1 = QDoubleSpinBox()
+		self.box1.setMinimum(-1000)
+		self.box1.setMaximum(1000)
+		self.box1.setSingleStep(0.5)
+		self.box1.setSuffix('mm')
+
+		self.box2 = QDoubleSpinBox()
+		self.box2.setMinimum(-1000)
+		self.box2.setMaximum(1000)
+		self.box2.setSingleStep(0.5)
+		self.box2.setSuffix('mm')
+
+		self.box3= QDoubleSpinBox()
+		self.box3.setMinimum(-1000)
+		self.box3.setMaximum(1000)
+		self.box3.setSingleStep(0.5)
+		self.box3.setSuffix('mm')
+
+		layout =QHBoxLayout()
+		layout.addWidget(self.lableX)
+		layout.addWidget(self.box1)
+		layout.addWidget(self.lableY)
+		layout.addWidget(self.box2)
+		layout.addWidget(self.lableZ)
+		layout.addWidget(self.box3)
+		layout.addWidget(self.btnDoWork2)
+		layout.addWidget(self.btnDoWork)
+		
+		
+		self.setLayout(layout)
+		self.show()
+		
+		v = FreeCADGui.activeDocument().activeView()
+		o = ViewObserver(v)
+		c = v.addEventCallback("SoMouseButtonEvent",o.logPosition)
+				
+	
+		
+	def getPose(self):
+
+		o = GetInform()
+		#FreeCAD.Console.PrintMessage("Where is the information" + "\n")
+
+		obj1 = o. coordinates()
+		FreeCAD.Console.PrintMessage('Succeded until here')
+		FreeCAD.Console.PrintMessage(str(obj1))
+
+					
+		self.box1.setValue(obj1[0])
+		self.box2.setValue(obj1[1])
+		self.box3.setValue(obj1[2])
+			
+	def calibrate(self):
+		Gui.activateWorkbench("PartDesignWorkbench")
+		objCorr = App.getDocument('NewDesign').getObject('Body').newObject('PartDesign::CoordinateSystem','Local_CS')
+		
+		objCorr.Support = [(App.getDocument('NewDesign').getObject('XY_Plane'),'')]
+		objCorr.MapMode = 'FlatFace'
+		objCorr.recompute()
+
+		Gui.getDocument('NewDesign').setEdit(App.getDocument('NewDesign').getObject('Body'),0,'Local_CS.')
+
+		o = GetInform()
+		obj2 = o. coordinates()
+		
+		App.getDocument('NewDesign').getObject('Local_CS').AttachmentOffset = App.Placement(App.Vector(obj2[0], obj2[1], obj2[2]),  App.Rotation(-180.0000000000, 0.0000000000, -180.0000000000))
+		App.getDocument('NewDesign').getObject('Local_CS').MapReversed = False
+		App.getDocument('NewDesign').getObject('Local_CS').Support = [(App.getDocument('NewDesign').getObject('XY_Plane'),'')]
+		App.getDocument('NewDesign').getObject('Local_CS').MapPathParameter = 0.000000
+		App.getDocument('NewDesign').getObject('Local_CS').MapMode = 'FlatFace'
+		App.getDocument('NewDesign').getObject('Local_CS').recompute()
+
+		
+		App.getDocument('NewDesign').getObject('Body').newObject('PartDesign::Plane','DatumPlane')
+		App.getDocument('NewDesign').getObject('DatumPlane').Support = [(App.getDocument('NewDesign').getObject('Local_CS'),'')]
+		App.getDocument('NewDesign').getObject('DatumPlane').MapMode = 'FlatFace'
+ 	
+		
+		
+ 
+		App.activeDocument().recompute()
+		Gui.getDocument('NewDesign').resetEdit()
+
+newNails = CalibrationOperation() 
+
+
+       
+
+
+       
+
+

@@ -1,0 +1,41 @@
+from PySide.QtGui import *
+from PySide.QtCore import *
+class NailingOperation(QWidget):
+	def __init__(self):
+		
+		super(NailingOperation, self).__init__()  
+		self.setWindowFlags(Qt.WindowStaysOnTopHint)
+		self.setWindowTitle("Screw Operation")
+		
+
+
+		self.lableX = QLabel("Position at X")
+		self.lableY = QLabel("Position at Y")
+		self.lableZ = QLabel("Position at Z")
+		self.box1 = QDoubleSpinBox()
+		self.box1.setSuffix('mm')
+		self.box2 = QDoubleSpinBox()
+		self.box2.setSuffix('mm')
+		self.box3= QDoubleSpinBox()
+		self.box3.setSuffix('mm')
+
+		layout =QHBoxLayout()
+		layout.addWidget(self.lableX)
+		layout.addWidget(self.box1)
+		layout.addWidget(self.lableY)
+		layout.addWidget(self.box2)
+		layout.addWidget(self.lableZ)
+		layout.addWidget(self.box3)
+
+		
+		
+		
+		self.setLayout(layout)
+		self.show()
+				
+
+		
+		print("test")
+
+
+newNails = NailingOperation() 

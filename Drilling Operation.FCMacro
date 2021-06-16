@@ -1,0 +1,235 @@
+from PySide.QtGui import *
+from PySide.QtCore import *
+import json
+
+
+arr = []
+j    = 0
+class ViewObserver:
+	def __init__(self, view):
+		self.view = view
+   
+	def logPosition(self, info):
+		down = (info["State"] == "DOWN")
+		pos = info["Position"]
+
+		global arr
+		global j
+		
+		f = open("C:/Users/bini/Desktop/JSON/mouse.txt",mode='w',encoding='utf-8')
+		if (down):
+			
+			#FreeCAD.Console.PrintMessage("Clicked on position: ("+str(pos[0])+", "+str(pos[1])+")\n")
+			pnt = self.view.getPoint(pos)
+		
+			#FreeCAD.Console.PrintMessage("World coordinates: " + str(pnt) + "\n")
+			info = self.view.getObjectInfo(pos)
+			#FreeCAD.Console.PrintMessage(" Object info: " + str(info) + "\n")
+			result = list(info.items())
+			
+	
+			for i in range(0,3):
+				b = result[i]
+				f.write(str(b[1]) + '\n')
+				arr.append(b[1])
+			j = j+1
+			if (j == 2):
+				arr = []
+				j = 0
+			
+			FreeCAD.Console.PrintMessage("counter of mouseclick = " + str(j) + "\n")
+			FreeCAD.Console.PrintMessage("Append Array Distance" + str(arr) + "\n")
+			f.close()
+			
+       
+class GetInform:
+
+	def __init__(self):
+    		pass
+	def coordinates(self):
+    		#FreeCAD.Console.PrintMessage("I m inside mouseclick method")
+		return arr
+
+
+class DrillingOperation(QWidget):
+	def __init__(self):
+		
+		super(DrillingOperation, self).__init__()  
+		self.setWindowFlags(Qt.WindowStaysOnTopHint)
+		self.setWindowTitle("Drilling Operation")
+		
+
+		self.btnDoWork = QPushButton("Drill at Position")
+		self.btnDoWork.clicked.connect(self.doWorkDrill)
+		
+		self.btnDoJson = QPushButton("Generate JSON")
+		self.btnDoJson.clicked.connect(self.Import2Jason)
+
+		self.btnDoWork2 = QPushButton("GetPos")
+		self.btnDoWork2.clicked.connect(self.getPose)
+
+		
+
+
+		self.lableX = QLabel("Position at X")
+		self.lableY = QLabel("Position at Y")
+		self.lableZ = QLabel("Position at Z")
+		self.labelD = QLabel("Diameter")
+		self.labelId = QLabel("Drill ID")
+		
+		self.box1 = QDoubleSpinBox()		
+		self.box1.setMinimum(-1000)
+		self.box1.setMaximum(1000)
+		self.box1.setSingleStep(0.5)
+		self.box1.setSuffix('mm')
+
+		self.box2 = QDoubleSpinBox()		
+		self.box2.setMinimum(-1000)
+		self.box2.setMaximum(1000)
+		self.box2.setSingleStep(0.5)
+		self.box2.setSuffix('mm')
+
+		self.box3 = QDoubleSpinBox()		
+		self.box3= QDoubleSpinBox()
+		self.box3.setMinimum(-1000)
+		self.box3.setMaximum(1000)
+		self.box3.setSingleStep(0.5)
+		self.box3.setSuffix('mm')
+
+
+		self.box4= QDoubleSpinBox()
+		self.box4.setSuffix('mm')
+		self.box5= QDoubleSpinBox()
+		self.box5.setSuffix('')
+
+		layout =QGridLayout()
+		layout.addWidget(self.lableX, 0, 0)
+		layout.addWidget(self.box1, 0, 1)
+		layout.addWidget(self.lableY, 1, 0)
+		layout.addWidget(self.box2, 1, 1)
+		layout.addWidget(self.lableZ, 2, 0)
+		layout.addWidget(self.box3, 2, 1)
+
+
+		layout.addWidget(self.btnDoWork, 2,3)
+		layout.addWidget(self.btnDoWork2, 2,2)
+		layout.addWidget(self.btnDoJson,4,0,4,4)
+		layout.addWidget(self.labelD,0, 2)
+		layout.addWidget(self.box4, 0, 3)
+
+		layout.addWidget(self.labelId,1,2 )
+		layout.addWidget(self.box5, 1,3)
+		self.setLayout(layout)
+		self.show()
+
+		v = FreeCADGui.activeDocument().activeView()
+		o = ViewObserver(v)
+		c = v.addEventCallback("SoMouseButtonEvent",o.logPosition)
+
+		
+
+	def getPose(self):
+
+		o = GetInform()
+		#FreeCAD.Console.PrintMessage("Where is the information" + "\n")
+
+		obj1 = o. coordinates()
+		FreeCAD.Console.PrintMessage('Postion retrived')
+		FreeCAD.Console.PrintMessage(str(obj1))
+
+					
+		self.box1.setValue(obj1[0])
+		self.box2.setValue(obj1[1])
+		self.box3.setValue(obj1[2])
+	
+	def doWorkDrill(self):
+		
+		App.ActiveDocument = App.getDocument("NewDesign")
+		Gui.activateWorkbench("SketcherWorkbench")
+		
+		App.getDocument('NewDesign').getObject('Body').newObject('Sketcher::SketchObject','Sketch001')
+
+		App.getDocument('NewDesign').getObject('Sketch001').Support = (App.getDocument('NewDesign').getObject('DatumPlane'),[''])
+		App.getDocument('NewDesign').getObject('Sketch001').MapMode = 'FlatFace'
+		App.ActiveDocument.recompute()
+		Gui.getDocument('NewDesign').setEdit(App.getDocument('NewDesign').getObject('Body'),0,'Sketch001.')
+		o = GetInform()
+		obj2 = o.coordinates()
+		x = float(obj2[0])
+		y = float(obj2[1])
+
+		diameter = self.box4.value()
+		FreeCAD.Console.PrintMessage(str(diameter))
+		App.ActiveDocument.Sketch001.addGeometry(Part.Circle(App.Vector(-x, y, 0), App.Vector(0,0,1), diameter), False)
+		App.ActiveDocument.recompute()
+
+		Gui.activateWorkbench("PartDesignWorkbench")
+		App.getDocument('NewDesign').getObject('Body').newObject('PartDesign::Pocket','Pocket')
+		App.getDocument('NewDesign').getObject('Pocket').Profile = App.getDocument('NewDesign').getObject('Sketch001')
+		App.getDocument('NewDesign').getObject('Sketch001').Visibility = False
+		App.getDocument('NewDesign').getObject('Pocket').Length = 5.000000
+		App.getDocument('NewDesign').getObject('Pocket').Length2 = 100.000000
+		App.getDocument('NewDesign').getObject('Pocket').Type = 0
+		App.getDocument('NewDesign').getObject('Pocket').UpToFace = None
+		App.getDocument('NewDesign').getObject('Pocket').Reversed = 1
+		App.getDocument('NewDesign').getObject('Pocket').Midplane = 0
+		App.getDocument('NewDesign').getObject('Pocket').Offset = 0
+		App.getDocument('NewDesign').recompute()
+		#App.getDocument('NewDesign').getObject('Pad').Visibility = False
+		Gui.getDocument('NewDesign').resetEdit()
+		
+		
+
+
+		#Gui.ActiveDocument.getInEdit().Object.Name'Sketch'
+
+
+
+
+#Make Json
+
+	def Import2Jason(self):
+		
+		x = self.box1.text()
+		y = self.box2.text()
+		z = self.box3.text()
+		
+		# angle of drill to the object
+		ax = 0
+		ay = 0
+		az = 0
+		
+		#  drilling diameter
+		di = self.box4.value()
+		
+		# drill id
+		drID =self.box5.value()
+
+	    
+		
+		f = open("C:/Users/bini/Desktop/JSON/drillingPosition.JSON",mode='w',encoding='utf-8')
+		# a Python object (dictionary):
+		persingObject = {
+		    "Name" : "DrillLocation",
+		    #"globalId": "ss",
+		    "Type" : "Location",
+		    "drillId" : drID,
+		    "Diameter": di,
+		    "X": x,
+		    "Y": y,
+		    "Z": z,
+		    "RX": ax,
+		    "RY": ay,
+		    "RZ": az
+		}
+		# convert into JSON:
+		y = json.dumps(persingObject, indent = 4)
+		f.write(y)
+		
+		
+		
+		f.close()
+		FreeCAD.Console.PrintMessage("The JSON file is created")
+
+
+newNails = DrillingOperation() 
