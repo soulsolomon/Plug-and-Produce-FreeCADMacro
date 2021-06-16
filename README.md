@@ -1,4 +1,4 @@
-# Plug-Produce-FreeCADMacro-
+# Plug&Produce-FreeCADMacro
 ![plot](./image/workbench.png)
 
 This is a Macro for FreeCAD that implements a set of add-on tools that allows a proper defination of Holes, Nails, Screws and Pick&Place processes in a plug and produce workflow. Process defination including variable names for positions and properties can be stored in a data file (J-SON). 
