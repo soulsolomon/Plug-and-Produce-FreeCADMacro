@@ -1,4 +1,5 @@
 # Plug-Produce-FreeCADMacro-
+![plot](./mdimages/githubbanner.png)
 IMPORTANT: Satisfy certain constraints to use plug and produce macro tools. 
 				   The tools are still under development and will be updated regularly. 
 				   These updates will focus on easing the following conditions.
