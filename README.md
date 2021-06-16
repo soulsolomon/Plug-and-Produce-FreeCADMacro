@@ -9,7 +9,7 @@ This is a Macro for FreeCAD that implements a set of add-on tools that allows a 
 IMPORTANT: Satisfy certain constraints to use plug and produce macro tools. 
 				   The tools are still under development and will be updated regularly. 
 				   These updates will focus on easing the following conditions.
-		=======================================================================================
+		============================================================================
 
 				1. You need to name your design to a name called "NewDesign".
 				   In this version (V.01), Use the design provided with this package. 
