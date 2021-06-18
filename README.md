@@ -37,9 +37,12 @@ IMPORTANT: Satisfy certain constraints to use plug and produce macro tools.
 		
 		Thank you for reading me!  
 		
-## Authors
+## Author
 
-* **Solomon Gugsa** 
+ **Solomon Gugsa** 
+## Co-Author 
+
+  **Mashiur Rahaman**
 
 ## Version History
 * 0.1
