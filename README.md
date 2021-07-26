@@ -1,4 +1,4 @@
-# Plug&Produce-FreeCADMacro (robotized prefabricated house production)
+# Plug&Produce-FreeCADMacro (Robotized prefabricated house production)
 ![plot](./image/workbench.png)
 
 
