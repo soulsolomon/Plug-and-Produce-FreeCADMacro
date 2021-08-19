@@ -55,7 +55,7 @@ IMPORTANT: Satisfy certain constraints to use plug and produce macro tools.
 This project is licensed under -----
 
 ## Acknowledgments
-Special thanks to Anders Nillson, Fredrik Danielsson 
+Special thanks to **Prof Fredrik Danielsson** and **Research engineer Anders Nillson**, 
 
 ## Open Source License Acknowledgement
 * Macro FCInfoToMouse
