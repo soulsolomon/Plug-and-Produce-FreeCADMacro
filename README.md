@@ -50,7 +50,7 @@ IMPORTANT: Satisfy certain constraints to use plug and produce macro tools.
 ## Version History
 * 0.1
     * Initial Release
-    * Version 02 comming on Nov 29/2021
+    * Version 02 comming on Dec 29/2021
 
 ## License
 
